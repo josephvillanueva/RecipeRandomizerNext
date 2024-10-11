@@ -1,7 +1,7 @@
-"use client";
+// components/RecipeDisplay.tsx
 
 import React from "react";
-import Image from "next/image"; // Import Image from next/image
+import Image from "next/image";
 
 interface Recipe {
   id: number;
@@ -14,29 +14,25 @@ interface RecipeDisplayProps {
 }
 
 const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipes }) => {
+  if (recipes.length === 0) return <p>No recipes found.</p>;
+
   return (
-    <div className="mt-4 grid grid-cols-1 gap-4">
-      {recipes.length > 0 ? (
-        recipes.map((recipe) => (
-          <div
-            key={recipe.id}
-            className="border rounded-lg shadow-md p-4 bg-gray-50"
-          >
-            <h2 className="font-bold text-lg text-gray-700">{recipe.title}</h2>
-            <div className="relative w-full h-40 mt-2">
-              <Image
-                src={recipe.image}
-                alt={recipe.title}
-                fill // This replaces layout="fill"
-                className="rounded-lg"
-                style={{ objectFit: "cover" }} // This replaces objectFit="cover"
-              />
-            </div>
-          </div>
-        ))
-      ) : (
-        <p className="text-center text-gray-500">No recipes found.</p>
-      )}
+    <div className="grid grid-cols-1 gap-4">
+      {recipes.map((recipe) => (
+        <div key={recipe.id} className="border border-gray-300 p-4 rounded-lg">
+          <h2 className="text-lg font-bold">{recipe.title}</h2>
+          {recipe.image && (
+            <Image
+              src={recipe.image}
+              alt={recipe.title}
+              width={500} // Set a fixed width
+              height={300} // Set a fixed height
+              className="mt-2 rounded"
+              priority // Optional: Load this image with priority
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
 };
