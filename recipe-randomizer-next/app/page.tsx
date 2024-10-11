@@ -10,16 +10,16 @@ interface Recipe {
   image: string;
 }
 
-const App: React.FC = () => {
+const Page: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
   const fetchRecipes = async (ingredients: string) => {
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/recipes/filter?ingredients=${ingredients}`
-      ); // Updated URL
+      );
 
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
@@ -49,4 +49,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Page;
