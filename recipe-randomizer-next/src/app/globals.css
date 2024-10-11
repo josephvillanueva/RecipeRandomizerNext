@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #4caf50;
+  --secondary-color: #2196f3;
+  --bg-color: #f9f9f9;
+  --text-color: #333;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+h1 {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+}
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 2em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
