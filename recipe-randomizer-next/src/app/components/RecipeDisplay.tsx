@@ -27,9 +27,9 @@ const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipes }) => {
               <Image
                 src={recipe.image}
                 alt={recipe.title}
-                layout="fill" // This makes the image responsive
-                objectFit="cover" // Ensures the image is cropped correctly
+                fill // This replaces layout="fill"
                 className="rounded-lg"
+                style={{ objectFit: "cover" }} // This replaces objectFit="cover"
               />
             </div>
           </div>

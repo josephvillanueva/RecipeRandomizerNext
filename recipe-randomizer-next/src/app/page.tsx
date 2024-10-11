@@ -12,11 +12,13 @@ interface Recipe {
 
 const App: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const API_BASE_URL =
+    process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
 
   const fetchRecipes = async (ingredients: string) => {
     try {
       const response = await fetch(
-        `/api/recipes/filter?ingredients=${ingredients}`
+        `${API_BASE_URL}/api/recipes/filter?ingredients=${ingredients}`
       ); // Updated URL
 
       if (!response.ok) {
