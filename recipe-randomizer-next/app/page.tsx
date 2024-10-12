@@ -15,17 +15,14 @@ const Page: React.FC = () => {
   // State to hold fetched recipes
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
-  // Use environment variable for API base URL, fallback to localhost for local development
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+  // Use environment variable for API base URL (for Spoonacular API in production)
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Function to fetch recipes based on ingredients
   const fetchRecipes = async (ingredients: string) => {
     try {
-      // Fetch recipes from your API
-      const response = await fetch(
-        `${API_BASE_URL}/api/recipes/filter?ingredients=${ingredients}`
-      );
+      // Fetch recipes from the Spoonacular API using the environment variable
+      const response = await fetch(`${API_BASE_URL}&query=${ingredients}`);
 
       // Check if the response is OK
       if (!response.ok) {
@@ -34,7 +31,7 @@ const Page: React.FC = () => {
 
       // Parse the JSON data
       const data = await response.json();
-      setRecipes(data); // Update state with the fetched recipes
+      setRecipes(data.results || []); // Update state with the fetched recipes
     } catch (error) {
       console.error("Error fetching recipes:", error); // Log the error
     }
