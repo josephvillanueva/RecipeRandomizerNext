@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import RecipeFilter from "./components/RecipeFilter";
 import RecipeDisplay from "./components/RecipeDisplay";
+import axios from "axios";
 
 // Define the Recipe interface to ensure type safety
 interface Recipe {
@@ -15,20 +16,19 @@ const Page: React.FC = () => {
   // State to hold fetched recipes
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
-  // Function to fetch recipes based on ingredients
+  // Function to fetch recipes based on ingredients using Axios
   const fetchRecipes = async (ingredients: string) => {
     try {
-      // Updated URL to include API key
-      const response = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.NEXT_PUBLIC_API_KEY}&includeIngredients=${ingredients}`
-      );
+      // Make API request with Axios
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}`, {
+        params: {
+          apiKey: process.env.NEXT_PUBLIC_API_KEY,
+          includeIngredients: ingredients,
+        },
+      });
 
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-
-      const data = await response.json();
-      setRecipes(data.results); // Adjust based on the actual response structure
+      // Update the recipes state with the data fetched from API
+      setRecipes(response.data.results); // Assuming 'results' is where the recipes are in the response
     } catch (error) {
       console.error("Error fetching recipes:", error);
     }
