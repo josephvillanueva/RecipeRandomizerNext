@@ -5,7 +5,6 @@ import RecipeFilter from "./components/RecipeFilter";
 import RecipeDisplay from "./components/RecipeDisplay";
 import axios from "axios";
 
-// Define the Recipe interface to ensure type safety
 interface Recipe {
   id: number;
   title: string;
@@ -15,9 +14,14 @@ interface Recipe {
 const Page: React.FC = () => {
   // State to hold fetched recipes
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [hasSearched, setHasSearched] = useState(false); // Track if a search has been made
+  const [loading, setLoading] = useState(false); // Track loading state
 
   // Function to fetch recipes based on ingredients using Axios
   const fetchRecipes = async (ingredients: string) => {
+    setLoading(true); // Set loading state to true
+    setHasSearched(true); // Set hasSearched to true when fetching recipes
+
     try {
       // Make API request with Axios
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}`, {
@@ -31,12 +35,15 @@ const Page: React.FC = () => {
       setRecipes(response.data.results); // Assuming 'results' is where the recipes are in the response
     } catch (error) {
       console.error("Error fetching recipes:", error);
+    } finally {
+      setLoading(false); // Set loading state to false after the request is done
     }
   };
 
   // Function to clear the recipes from the state
   const clearRecipes = () => {
     setRecipes([]);
+    setHasSearched(false); // Reset hasSearched when clearing recipes
   };
 
   return (
@@ -46,7 +53,12 @@ const Page: React.FC = () => {
           Recipe Randomizer
         </h1>
         <RecipeFilter fetchRecipes={fetchRecipes} clearRecipes={clearRecipes} />
-        <RecipeDisplay recipes={recipes} />
+
+        {loading ? ( // Display loading indicator while fetching recipes
+          <p className="text-center">Loading...</p>
+        ) : (
+          <RecipeDisplay recipes={recipes} hasSearched={hasSearched} />
+        )}
       </div>
     </div>
   );

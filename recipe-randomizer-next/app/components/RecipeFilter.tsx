@@ -7,18 +7,21 @@ interface RecipeFilterProps {
   clearRecipes: () => void;
 }
 
+// RecipeFilter component to handle user input for recipe search
 const RecipeFilter: React.FC<RecipeFilterProps> = ({
   fetchRecipes,
   clearRecipes,
 }) => {
   const [inputValue, setInputValue] = useState("");
 
+  // Handle search when Enter is pressed
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       fetchRecipes(inputValue);
     }
   };
 
+  // Clear input and recipes
   const handleClear = () => {
     setInputValue("");
     clearRecipes();
