@@ -15,25 +15,22 @@ const Page: React.FC = () => {
   // State to hold fetched recipes
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
-  // Use environment variable for API base URL (for Spoonacular API in production)
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
   // Function to fetch recipes based on ingredients
   const fetchRecipes = async (ingredients: string) => {
     try {
-      // Fetch recipes from the Spoonacular API using the environment variable
-      const response = await fetch(`${API_BASE_URL}&query=${ingredients}`);
+      // Updated URL to include API key
+      const response = await fetch(
+        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.NEXT_PUBLIC_API_KEY}&includeIngredients=${ingredients}`
+      );
 
-      // Check if the response is OK
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
       }
 
-      // Parse the JSON data
       const data = await response.json();
-      setRecipes(data.results || []); // Update state with the fetched recipes
+      setRecipes(data.results); // Adjust based on the actual response structure
     } catch (error) {
-      console.error("Error fetching recipes:", error); // Log the error
+      console.error("Error fetching recipes:", error);
     }
   };
 
