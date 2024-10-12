@@ -31,3 +31,24 @@ h1 {
   padding: 2em;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.tooltip {
+  display: none;
+  width: 250px;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  z-index: 10;
+  top: -59px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.show-tooltip {
+  display: block;
+  opacity: 1;
+}
