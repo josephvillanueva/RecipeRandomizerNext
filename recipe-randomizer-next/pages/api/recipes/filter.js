@@ -1,47 +1,45 @@
 import axios from "axios";
 
 export default async function handler(req, res) {
-  const { ingredients } = req.query;
-  const apiKey = process.env.API_KEY;
-
-  // CORS headers (adjust as needed)
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-
-  // Only allow GET requests
   if (req.method !== "GET") {
+    res.setHeader("Allow", "GET");
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  // Validate API Key
+  const apiKey = process.env.API_KEY;
   if (!apiKey) {
     console.error("API_KEY is undefined");
-    return res.status(500).json({ error: "API_KEY is not defined" });
+    return res.status(500).json({ error: "Server misconfiguration" });
   }
 
-  // Validate ingredients parameter
-  if (!ingredients || ingredients.trim() === "") {
+  const { ingredients } = req.query;
+  if (typeof ingredients !== "string" || ingredients.trim() === "") {
     return res
       .status(400)
       .json({ error: "Ingredients query parameter is required" });
   }
-
-  const apiUrl = "https://api.spoonacular.com/recipes/findByIngredients";
+  if (ingredients.length > 500) {
+    return res.status(400).json({ error: "Ingredients query too long" });
+  }
 
   try {
-    const response = await axios.get(apiUrl, {
-      params: {
-        ingredients: ingredients,
-        apiKey: apiKey,
-      },
-    });
+    const response = await axios.get(
+      "https://api.spoonacular.com/recipes/findByIngredients",
+      {
+        params: {
+          ingredients: ingredients.trim(),
+          apiKey,
+        },
+        timeout: 10000,
+      }
+    );
 
     return res.status(200).json(response.data);
   } catch (error) {
-    console.error("Error fetching from the external API:", error.message);
-    return res.status(500).json({
-      error: "Error fetching from the external API",
-      message: error.message,
-    });
+    console.error("Error fetching from Spoonacular:", error.message);
+    const status = error.response?.status === 429 ? 429 : 502;
+    return res
+      .status(status)
+      .json({ error: "Failed to fetch recipes from upstream" });
   }
 }
