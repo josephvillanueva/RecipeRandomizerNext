@@ -17,26 +17,21 @@ const Page: React.FC = () => {
   const [hasSearched, setHasSearched] = useState(false); // Track if a search has been made
   const [loading, setLoading] = useState(false); // Track loading state
 
-  // Function to fetch recipes based on ingredients using Axios
   const fetchRecipes = async (ingredients: string) => {
-    setLoading(true); // Set loading state to true
-    setHasSearched(true); // Set hasSearched to true when fetching recipes
+    setLoading(true);
+    setHasSearched(true);
 
     try {
-      // Make API request with Axios
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}`, {
-        params: {
-          apiKey: process.env.NEXT_PUBLIC_API_KEY,
-          includeIngredients: ingredients,
-        },
+      const response = await axios.get("/api/recipes/filter", {
+        params: { ingredients },
       });
 
-      // Update the recipes state with the data fetched from API
-      setRecipes(response.data.results); // Assuming 'results' is where the recipes are in the response
+      setRecipes(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching recipes:", error);
+      setRecipes([]);
     } finally {
-      setLoading(false); // Set loading state to false after the request is done
+      setLoading(false);
     }
   };
 
