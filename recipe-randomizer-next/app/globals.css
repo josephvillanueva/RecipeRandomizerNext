@@ -2,53 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --primary-color: #4caf50;
-  --secondary-color: #2196f3;
-  --bg-color: #f9f9f9;
-  --text-color: #333;
+/* Light and dark follow the visitor's system setting (Tailwind's default
+   "media" strategy). */
+@layer base {
+  body {
+    @apply bg-white text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
+  }
+
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-emerald-600 dark:outline-emerald-400;
+  }
 }
 
-body {
-  margin: 0;
-  font-family: "Inter", sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-
-h1 {
-  font-size: 3rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-}
-
-.card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 2em;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.tooltip {
-  display: none;
-  width: 250px;
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.75);
-  color: white;
-  padding: 5px;
-  border-radius: 4px;
-  z-index: 10;
-  top: -59px;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.show-tooltip {
-  display: block;
-  opacity: 1;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
