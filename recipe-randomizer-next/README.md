@@ -29,7 +29,7 @@ You need a free Spoonacular API key.
 
 ```bash
 git clone https://github.com/josephvillanueva/RecipeRandomizerNext.git
-cd RecipeRandomizerNext
+cd RecipeRandomizerNext/recipe-randomizer-next
 npm install
 echo "API_KEY=your_key_here" > .env.local
 npm run dev
