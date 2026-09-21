@@ -22,6 +22,10 @@ Type in the ingredients you already have and get back recipes you can make with 
 - **[Spoonacular API](https://spoonacular.com/food-api)** for recipe data
 - Deployed on **Vercel**
 
+## Architecture
+
+![Recipe Randomizer architecture: the browser calls Next.js API routes on Vercel, which add the API key and call the Spoonacular API; recipe photos go through the next/image optimizer](docs/architecture.svg)
+
 ## How it's built
 
 The browser never talks to Spoonacular directly. Requests go through Next.js API routes (`/api/recipes/filter` and `/api/recipes/random`), which:
