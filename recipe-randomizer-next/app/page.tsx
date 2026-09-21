@@ -101,7 +101,7 @@ export default function Page() {
         Recipe data from Spoonacular. Built by{" "}
         <a
           className="font-medium text-zinc-700 underline dark:text-zinc-200"
-          href="https://joseph-react-portfolio.vercel.app"
+          href="https://joseph-villanueva-portfolio.vercel.app"
         >
           Joseph Villanueva
         </a>
