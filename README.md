@@ -1,77 +1,50 @@
-# Recipe Randomizer Next
+# Recipe Randomizer
 
-## Project Overview
+Type in the ingredients you already have and get back recipes you can make with them.
 
-Recipe Randomizer Next is a web application that allows users to discover recipes based on available ingredients. By inputting ingredients, users receive a list of matching recipes from the Spoonacular API. The app is built with modern frontend and backend technologies, delivering a fast and responsive user experience.
+**Live:** https://recipe-randomizer-next.vercel.app
+
+<!-- Add a screenshot and uncomment: -->
+<!-- ![Recipe Randomizer search results](docs/screenshot.png) -->
 
 ## Features
 
-- Recipe search by entering ingredients
-- Clear search results with one click
-- Responsive design optimized for various screen sizes
-- Minimalist layout for a clean user interface
+- Search recipes by a comma-separated list of ingredients
+- Clear the search and results in one click
+- Loading and empty states
+- Responsive layout
 
-## Technologies Used
+## Tech stack
 
-### Frontend
+- **Next.js 15** (App Router UI + API routes) with **React 19** and **TypeScript**
+- **Tailwind CSS** and Framer Motion
+- **[Spoonacular API](https://spoonacular.com/food-api)** for recipe data
+- Deployed on **Vercel**
 
-- **React** (with Hooks for state management)
-- **Next.js** (for server-side rendering)
-- **TypeScript** (strongly typed code)
-- **Tailwind CSS** (for styling)
+## How it's built
 
-### Backend
+The browser never talks to Spoonacular directly. Requests go through Next.js API routes (`/api/recipes/filter` and `/api/recipes/random`), which:
 
-- **Node.js** and **Express.js** (for the API layer)
-- **Spoonacular API** (for fetching recipe data)
+- **keep the API key server-side**, so it never ships to the client bundle
+- **validate input**: GET only, a non-empty ingredients string, and a 500-character cap
+- **use a 10-second upstream timeout** and map failures to clear status codes: `429` when Spoonacular's rate limit is hit, `502` for other upstream errors, and `500` if the key is missing
 
-## Installation
+This is a Next.js rewrite of an earlier Vite + Express version. Moving to API routes removed the separate server and put the frontend and backend in one Vercel deployment.
 
-### 1. Clone the Repository
+## Running locally
 
 ```bash
 git clone https://github.com/josephvillanueva/RecipeRandomizerNext.git
-cd RecipeRandomizerNext
-```
-
-### 2. Install Dependencies
-
-Navigate to the root directory and install dependencies for both frontend and backend:
-
-```bash
+cd RecipeRandomizerNext/recipe-randomizer-next
 npm install
-```
-
-### 3. Configure Environment Variables
-
-In the root directory, create a `.env.local` file and add your Spoonacular API key:
-
-```bash
-API_KEY=your_spoonacular_api_key
-```
-
-Replace `your_spoonacular_api_key` with your actual API key from [Spoonacular](https://spoonacular.com/food-api).
-
-### 4. Run the Application
-
-Start the development server:
-
-```bash
+echo "API_KEY=your_spoonacular_key" > .env.local
 npm run dev
 ```
 
-Access the app on `http://localhost:3000`.
+Then open http://localhost:3000.
 
-## Usage
+## What I'd do next
 
-1. Enter ingredients you have on hand.
-2. Click **Search** to retrieve recipes.
-3. Click **Clear** to reset the input fields and results.
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request if you have suggestions or improvements.
-
-## License
-
-This project is licensed under the MIT License.
+- Surface the existing `/api/recipes/random` endpoint as a "Surprise me" button
+- Cache repeated ingredient searches to stay under Spoonacular's free-tier quota
+- Add filters for missing-ingredient count and diet
