@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { recipeUrl, usableImage, type IngredientMatch } from "../lib/types";
 
 interface RecipeDisplayProps {
@@ -8,11 +8,13 @@ interface RecipeDisplayProps {
 }
 
 export default function RecipeDisplay({ recipes, ingredients }: RecipeDisplayProps) {
+  const reduceMotion = useReducedMotion();
+
   if (recipes.length === 0) {
     return (
       <div className="mx-auto max-w-md text-center">
         <p className="text-lg font-semibold">No recipes found</p>
-        <p className="mt-1 text-stone-600">
+        <p className="mt-1 text-zinc-600 dark:text-zinc-400">
           Nothing uses {ingredients.join(", ")}. Try fewer ingredients, or more
           common ones.
         </p>
@@ -22,29 +24,30 @@ export default function RecipeDisplay({ recipes, ingredients }: RecipeDisplayPro
 
   return (
     <section>
-      <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-2xl font-bold tracking-tight">
-          {recipes.length} recipes
-        </h2>
-        <p className="text-sm text-stone-500">Best matches for what you have come first</p>
-      </div>
+      <h2 className="text-2xl font-bold tracking-tight">{recipes.length} recipes</h2>
+      <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+        Sorted so the ones using most of your ingredients come first.
+      </p>
 
-      <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {recipes.map((recipe, index) => {
           const total = recipe.usedIngredientCount + recipe.missedIngredientCount;
-          const coverage = total ? recipe.usedIngredientCount / total : 0;
           const image = usableImage(recipe.image);
           const missing = recipe.missedIngredients.map((i) => i.name);
 
           return (
             <motion.li
               key={recipe.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: Math.min(index, 8) * 0.04 }}
-              className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-stone-200 transition hover:-translate-y-0.5 hover:shadow-md"
+              transition={{
+                duration: 0.4,
+                delay: Math.min(index, 8) * 0.04,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
             >
-              <div className="relative aspect-[4/3] bg-stone-100">
+              <div className="relative aspect-[4/3] bg-zinc-100 dark:bg-zinc-800">
                 {image && (
                   <Image
                     src={image}
@@ -58,43 +61,21 @@ export default function RecipeDisplay({ recipes, ingredients }: RecipeDisplayPro
                 )}
               </div>
 
-              <div className="flex flex-1 flex-col gap-3 p-4">
+              <div className="flex flex-1 flex-col gap-2 p-4">
                 <h3 className="font-semibold leading-snug">{recipe.title}</h3>
-
-                <div>
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium text-emerald-800">
-                      You have {recipe.usedIngredientCount} of {total}
-                    </span>
-                    <span className="text-stone-500">{Math.round(coverage * 100)}%</span>
-                  </div>
-                  <div
-                    className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-stone-100"
-                    role="meter"
-                    aria-label="Ingredients you already have"
-                    aria-valuemin={0}
-                    aria-valuemax={total}
-                    aria-valuenow={recipe.usedIngredientCount}
-                  >
-                    <div
-                      className="h-full rounded-full bg-emerald-600"
-                      style={{ width: `${coverage * 100}%` }}
-                    />
-                  </div>
-                </div>
-
+                <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
+                  You have {recipe.usedIngredientCount} of {total} ingredients
+                </p>
                 {missing.length > 0 && (
-                  <p className="text-sm text-stone-600">
-                    <span className="font-medium text-stone-800">Missing:</span>{" "}
-                    {missing.join(", ")}
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                    Still need {missing.join(", ")}
                   </p>
                 )}
-
                 <a
                   href={recipeUrl(recipe.id, recipe.title)}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-auto inline-flex items-center gap-1 pt-1 font-semibold text-emerald-700 hover:text-emerald-900"
+                  className="mt-auto pt-2 font-semibold text-emerald-700 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300"
                 >
                   View recipe <span aria-hidden="true">→</span>
                   <span className="sr-only">for {recipe.title}, opens in a new tab</span>

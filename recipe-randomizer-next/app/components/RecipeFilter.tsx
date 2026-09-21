@@ -75,24 +75,27 @@ export default function RecipeFilter({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl bg-white p-4 shadow-lg shadow-stone-200/70 ring-1 ring-stone-200 sm:p-5"
+      className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-5 dark:border-zinc-800 dark:bg-zinc-950"
     >
-      <label htmlFor="ingredient-input" className="text-sm font-semibold text-stone-700">
+      <label
+        htmlFor="ingredient-input"
+        className="text-sm font-semibold text-zinc-700 dark:text-zinc-300"
+      >
         Ingredients you have
       </label>
 
-      <div className="mt-2 flex min-h-12 flex-wrap items-center gap-2 rounded-xl border border-stone-300 px-3 py-2 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20">
+      <div className="mt-2 flex min-h-12 flex-wrap items-center gap-2 rounded-xl border border-zinc-300 px-3 py-2 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20 dark:border-zinc-700 dark:focus-within:border-emerald-400">
         {chips.map((chip) => (
           <span
             key={chip}
-            className="inline-flex items-center gap-1 rounded-full bg-emerald-100 py-1 pl-3 pr-1 text-sm font-medium text-emerald-900"
+            className="inline-flex items-center gap-1 rounded-full bg-emerald-50 py-1 pl-3 pr-1 text-sm font-medium text-emerald-900 ring-1 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-100 dark:ring-emerald-800"
           >
             {chip}
             <button
               type="button"
               onClick={() => removeChip(chip)}
               aria-label={`Remove ${chip}`}
-              className="grid h-5 w-5 place-items-center rounded-full hover:bg-emerald-200"
+              className="grid h-5 w-5 place-items-center rounded-full hover:bg-emerald-100 dark:hover:bg-emerald-900"
             >
               ×
             </button>
@@ -103,25 +106,24 @@ export default function RecipeFilter({
           value={draft}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={chips.length ? "Add another..." : "Type an ingredient and press Enter"}
+          placeholder={chips.length ? "Add another" : "Type an ingredient, then press Enter"}
           aria-describedby="ingredient-hint"
-          className="min-w-[10rem] flex-1 border-0 bg-transparent py-1 text-base outline-none placeholder:text-stone-400 focus-visible:outline-none"
+          className="min-w-[10rem] flex-1 border-0 bg-transparent py-1 text-base outline-none placeholder:text-zinc-500 focus-visible:outline-none dark:placeholder:text-zinc-500"
         />
       </div>
-      <p id="ingredient-hint" className="mt-2 text-sm text-stone-500">
-        Press Enter or type a comma after each ingredient. Backspace removes
-        the last one.
+      <p id="ingredient-hint" className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Press Enter or type a comma after each one. Backspace removes the last.
       </p>
 
       {chips.length === 0 && !draft && (
         <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-          <span className="text-stone-500">Try:</span>
+          <span className="text-zinc-600 dark:text-zinc-400">Try:</span>
           {EXAMPLES.map((example) => (
             <button
               key={example}
               type="button"
               onClick={() => addChips([example])}
-              className="rounded-full border border-stone-300 px-3 py-1 text-stone-700 hover:border-emerald-600 hover:text-emerald-800"
+              className="rounded-full border border-zinc-300 px-3 py-1 text-zinc-700 transition hover:border-emerald-600 hover:text-emerald-800 active:scale-[0.98] dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
             >
               + {example}
             </button>
@@ -133,7 +135,7 @@ export default function RecipeFilter({
         <button
           type="submit"
           disabled={allIngredients.length === 0 || busy}
-          className="rounded-xl bg-emerald-700 px-5 py-2.5 font-semibold text-white shadow-sm transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-xl bg-emerald-700 px-5 py-2.5 font-semibold text-white transition hover:bg-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-emerald-500 dark:text-zinc-950 dark:hover:bg-emerald-400"
         >
           Find recipes
         </button>
@@ -141,7 +143,7 @@ export default function RecipeFilter({
           type="button"
           onClick={onSurprise}
           disabled={busy}
-          className="rounded-xl bg-amber-400 px-5 py-2.5 font-semibold text-stone-900 shadow-sm transition hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-xl border border-zinc-300 px-5 py-2.5 font-semibold text-zinc-800 transition hover:bg-zinc-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-900"
         >
           Surprise me
         </button>
@@ -149,7 +151,7 @@ export default function RecipeFilter({
           <button
             type="button"
             onClick={handleClear}
-            className="ml-auto rounded-xl px-4 py-2.5 font-medium text-stone-600 hover:bg-stone-100"
+            className="ml-auto rounded-xl px-4 py-2.5 font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
           >
             Clear
           </button>

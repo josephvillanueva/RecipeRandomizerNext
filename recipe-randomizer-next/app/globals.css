@@ -2,13 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light and dark follow the visitor's system setting (Tailwind's default
+   "media" strategy). */
 @layer base {
   body {
-    @apply bg-stone-50 text-stone-900 antialiased;
+    @apply bg-white text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
   }
 
   :focus-visible {
-    @apply outline outline-2 outline-offset-2 outline-emerald-600;
+    @apply outline outline-2 outline-offset-2 outline-emerald-600 dark:outline-emerald-400;
   }
 }
 
