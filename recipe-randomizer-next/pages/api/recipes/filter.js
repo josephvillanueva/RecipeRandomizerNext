@@ -1,4 +1,6 @@
-import axios from "axios";
+import { spoonacular } from "../../../app/lib/spoonacular";
+
+const MAX_LENGTH = 500;
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -6,40 +8,23 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    console.error("API_KEY is undefined");
-    return res.status(500).json({ error: "Server misconfiguration" });
-  }
-
   const { ingredients } = req.query;
   if (typeof ingredients !== "string" || ingredients.trim() === "") {
     return res
       .status(400)
-      .json({ error: "Ingredients query parameter is required" });
+      .json({ error: "Enter at least one ingredient to search." });
   }
-  if (ingredients.length > 500) {
-    return res.status(400).json({ error: "Ingredients query too long" });
+  if (ingredients.length > MAX_LENGTH) {
+    return res.status(400).json({ error: "That ingredient list is too long." });
   }
 
-  try {
-    const response = await axios.get(
-      "https://api.spoonacular.com/recipes/findByIngredients",
-      {
-        params: {
-          ingredients: ingredients.trim(),
-          apiKey,
-        },
-        timeout: 10000,
-      }
-    );
-
-    return res.status(200).json(response.data);
-  } catch (error) {
-    console.error("Error fetching from Spoonacular:", error.message);
-    const status = error.response?.status === 429 ? 429 : 502;
-    return res
-      .status(status)
-      .json({ error: "Failed to fetch recipes from upstream" });
-  }
+  const { status, body } = await spoonacular("/recipes/findByIngredients", {
+    ingredients: ingredients.trim(),
+    number: 12,
+    // Rank by how many of your ingredients each recipe uses, and do not count
+    // pantry staples such as salt and water as missing.
+    ranking: 1,
+    ignorePantry: true,
+  });
+  return res.status(status).json(body);
 }

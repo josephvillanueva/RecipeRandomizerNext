@@ -9,10 +9,11 @@ Type in the ingredients you already have and get back recipes you can make with 
 
 ## Features
 
-- Search recipes by a comma-separated list of ingredients
-- Clear the search and results in one click
-- Loading and empty states
-- Responsive layout
+- **Ingredient chips.** Type an ingredient and press Enter or a comma; pasted lists split automatically, and Backspace removes the last one
+- **Best matches first.** Results are ranked by how many of your ingredients each recipe uses, with a "you have 3 of 5" meter and the missing ingredients listed
+- **Surprise me** picks a random recipe with its cooking time and servings
+- **Honest error states.** An exhausted daily quota says so, instead of looking like "no recipes found"
+- Loading skeletons, keyboard-accessible controls, and a responsive layout
 
 ## Tech stack
 
@@ -27,7 +28,8 @@ The browser never talks to Spoonacular directly. Requests go through Next.js API
 
 - **keep the API key server-side**, so it never ships to the client bundle
 - **validate input**: GET only, a non-empty ingredients string, and a 500-character cap
-- **use a 10-second upstream timeout** and map failures to clear status codes: `429` when Spoonacular's rate limit is hit, `502` for other upstream errors, and `500` if the key is missing
+- **use a 10-second upstream timeout** and map failures to clear status codes: `429` when Spoonacular's quota is used up (Spoonacular reports this as `402` or `429`), `502` for other upstream errors, and `500` if the key is missing
+- **trim the random-recipe payload** to the fields the page shows, instead of forwarding long HTML summaries and nutrition data
 
 This is a Next.js rewrite of an earlier Vite + Express version. Moving to API routes removed the separate server and put the frontend and backend in one Vercel deployment.
 
@@ -45,6 +47,5 @@ Then open http://localhost:3000.
 
 ## What I'd do next
 
-- Surface the existing `/api/recipes/random` endpoint as a "Surprise me" button
 - Cache repeated ingredient searches to stay under Spoonacular's free-tier quota
 - Add filters for missing-ingredient count and diet
