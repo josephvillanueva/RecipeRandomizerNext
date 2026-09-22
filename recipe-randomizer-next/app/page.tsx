@@ -5,6 +5,9 @@ import RecipeFilter from "./components/RecipeFilter";
 import RecipeDisplay from "./components/RecipeDisplay";
 import RandomRecipeCard from "./components/RandomRecipeCard";
 import type { ApiError, IngredientMatch, RandomRecipe } from "./lib/types";
+// The same normalized list the API uses as its cache key, so equivalent
+// searches share one URL and one CDN cache entry.
+import { normalizeIngredients } from "./lib/search-cache.mjs";
 
 type ViewState =
   | { kind: "idle" }
@@ -29,7 +32,7 @@ export default function Page() {
     setView({ kind: "loading", label: "Finding recipes that use what you have" });
     try {
       const recipes = await getJson<IngredientMatch[]>(
-        `/api/recipes/filter?${new URLSearchParams({ ingredients: ingredients.join(",") })}`,
+        `/api/recipes/filter?${new URLSearchParams({ ingredients: normalizeIngredients(ingredients).join(",") })}`,
       );
       setView({ kind: "matches", ingredients, recipes });
     } catch (error) {
