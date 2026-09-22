@@ -108,7 +108,7 @@ export default function RecipeFilter({
           onKeyDown={handleKeyDown}
           placeholder={chips.length ? "Add another" : "Type an ingredient, then press Enter"}
           aria-describedby="ingredient-hint"
-          className="min-w-[10rem] flex-1 border-0 bg-transparent py-1 text-base outline-none placeholder:text-zinc-500 focus-visible:outline-none dark:placeholder:text-zinc-500"
+          className="min-w-40 flex-1 border-0 bg-transparent py-1 text-base outline-hidden placeholder:text-zinc-500 focus-visible:outline-hidden dark:placeholder:text-zinc-500"
         />
       </div>
       <p id="ingredient-hint" className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
