@@ -24,7 +24,7 @@ export default function RandomRecipeCard({ recipe, onAnother }: RandomRecipeCard
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       className="mx-auto grid max-w-4xl overflow-hidden rounded-2xl border border-zinc-200 bg-white md:grid-cols-2 dark:border-zinc-800 dark:bg-zinc-900"
     >
-      <div className="relative aspect-[4/3] bg-zinc-100 md:aspect-auto dark:bg-zinc-800">
+      <div className="relative aspect-4/3 bg-zinc-100 md:aspect-auto dark:bg-zinc-800">
         {image && (
           <Image
             src={image}

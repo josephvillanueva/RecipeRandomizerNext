@@ -51,7 +51,7 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-[100dvh]">
+    <div className="min-h-dvh">
       <header className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mx-auto max-w-5xl px-5 pb-10 pt-12 sm:pt-16">
           <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
@@ -123,10 +123,10 @@ function LoadingGrid({ label }: { label: string }) {
             key={i}
             className="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800"
           >
-            <div className="aspect-[4/3] animate-pulse bg-zinc-100 dark:bg-zinc-800" />
+            <div className="aspect-4/3 animate-pulse bg-zinc-100 dark:bg-zinc-800" />
             <div className="space-y-2 p-4">
-              <div className="h-4 w-3/4 animate-pulse rounded bg-zinc-100 dark:bg-zinc-800" />
-              <div className="h-3 w-1/2 animate-pulse rounded bg-zinc-100 dark:bg-zinc-800" />
+              <div className="h-4 w-3/4 animate-pulse rounded-sm bg-zinc-100 dark:bg-zinc-800" />
+              <div className="h-3 w-1/2 animate-pulse rounded-sm bg-zinc-100 dark:bg-zinc-800" />
             </div>
           </div>
         ))}

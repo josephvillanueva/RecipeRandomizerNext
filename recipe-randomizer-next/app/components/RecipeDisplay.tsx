@@ -47,7 +47,7 @@ export default function RecipeDisplay({ recipes, ingredients }: RecipeDisplayPro
               }}
               className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
             >
-              <div className="relative aspect-[4/3] bg-zinc-100 dark:bg-zinc-800">
+              <div className="relative aspect-4/3 bg-zinc-100 dark:bg-zinc-800">
                 {image && (
                   <Image
                     src={image}
