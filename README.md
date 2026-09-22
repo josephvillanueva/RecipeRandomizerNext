@@ -4,8 +4,7 @@ Type in the ingredients you already have and get back recipes you can make with 
 
 **Live:** https://recipe-randomizer-next.vercel.app · **[Product brief](docs/PRODUCT.md)** · **[Roadmap](https://github.com/josephvillanueva/RecipeRandomizerNext/milestone/1)**
 
-<!-- Add a screenshot and uncomment: -->
-<!-- ![Recipe Randomizer search results](docs/screenshot.png) -->
+![Recipe Randomizer results for egg, spinach, and tomato, ranked by how many ingredients each recipe uses](docs/screenshot.jpg)
 
 ## Features
 
