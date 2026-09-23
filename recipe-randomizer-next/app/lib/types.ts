@@ -12,6 +12,9 @@ export interface IngredientMatch {
   missedIngredientCount: number;
   usedIngredients: Ingredient[];
   missedIngredients: Ingredient[];
+  /** Short plain-text description, when Spoonacular has one. */
+  summary?: string;
+  likes?: number;
 }
 
 /** The subset of Spoonacular's random recipe that the app displays. */

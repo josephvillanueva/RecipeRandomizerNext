@@ -4,6 +4,7 @@ import {
   createTtlCache,
   normalizeIngredients,
 } from "../../../app/lib/search-cache.mjs";
+import { plainSummary, rankRecipes } from "../../../app/lib/recipes.mjs";
 
 const MAX_LENGTH = 500;
 
@@ -11,8 +12,29 @@ const MAX_LENGTH = 500;
 // lets the CDN share successful results across instances too.
 const cache = createTtlCache();
 
-function searchSpoonacular(ingredients) {
-  return spoonacular("/recipes/findByIngredients", {
+/**
+ * One extra call fetches a short description for every result at once.
+ * Descriptions are a nice-to-have, so a failure here still returns recipes.
+ */
+async function withSummaries(recipes) {
+  if (recipes.length === 0) return recipes;
+
+  const { status, body } = await spoonacular("/recipes/informationBulk", {
+    ids: recipes.map((recipe) => recipe.id).join(","),
+    includeNutrition: false,
+  });
+
+  if (status !== 200 || !Array.isArray(body)) {
+    console.info(JSON.stringify({ event: "recipe_summaries", result: "skipped", status }));
+    return recipes;
+  }
+
+  const summaries = new Map(body.map((recipe) => [recipe.id, plainSummary(recipe.summary)]));
+  return recipes.map((recipe) => ({ ...recipe, summary: summaries.get(recipe.id) || "" }));
+}
+
+async function searchSpoonacular(ingredients) {
+  const { status, body } = await spoonacular("/recipes/findByIngredients", {
     ingredients,
     number: 12,
     // Rank by how many of your ingredients each recipe uses, and do not count
@@ -20,6 +42,11 @@ function searchSpoonacular(ingredients) {
     ranking: 1,
     ignorePantry: true,
   });
+
+  if (status !== 200 || !Array.isArray(body)) return { status, body };
+
+  // Dishes needing nothing extra first, then the closest matches.
+  return { status, body: rankRecipes(await withSummaries(body)) };
 }
 
 export default async function handler(req, res) {
