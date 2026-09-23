@@ -25,6 +25,20 @@ test("summary falls back to a word boundary with an ellipsis", () => {
   assert.ok(!summary.includes("wor..."));
 });
 
+test("summary leaves no markup behind, even when tags are nested", () => {
+  const html = "<b>Adobo</b> <scr<script>x</script>ipt>alert(1)</script> is a stew.";
+
+  const summary = plainSummary(html);
+  assert.ok(!summary.includes("<"), summary);
+  assert.equal(summary, "Adobo alert(1) is a stew.");
+});
+
+test("summary drops the contents of script and style blocks", () => {
+  const html = "<style>p { color: red }</style>Sinigang is a sour soup.";
+
+  assert.equal(plainSummary(html), "Sinigang is a sour soup.");
+});
+
 test("summary is empty when there is nothing usable", () => {
   assert.equal(plainSummary(""), "");
   assert.equal(plainSummary(undefined), "");

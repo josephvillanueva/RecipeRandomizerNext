@@ -5,6 +5,26 @@
 const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'", nbsp: " " };
 
 /**
+ * Drops any markup Spoonacular sends back. Tags are removed until the string
+ * stops changing, so a nested or malformed tag cannot survive a single pass.
+ */
+function stripTags(html) {
+  let text = String(html).replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, " ");
+  let previous;
+
+  do {
+    previous = text;
+    text = text.replace(/<[^<>]*>/g, "");
+  } while (text !== previous);
+
+  return text;
+}
+
+function decodeEntities(text) {
+  return text.replace(/&([a-z#0-9]+);/gi, (match, name) => ENTITIES[name.toLowerCase()] ?? match);
+}
+
+/**
  * Turns Spoonacular's HTML summary into one or two plain sentences. Returns
  * an empty string when there is nothing usable, so the card falls back to
  * showing just the title.
@@ -12,11 +32,7 @@ const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'", nbsp: " " 
 export function plainSummary(html, maxLength = 180) {
   if (!html) return "";
 
-  const text = String(html)
-    .replace(/<[^>]*>/g, "")
-    .replace(/&([a-z#0-9]+);/gi, (match, name) => ENTITIES[name.toLowerCase()] ?? match)
-    .replace(/\s+/g, " ")
-    .trim();
+  const text = decodeEntities(stripTags(html)).replace(/\s+/g, " ").trim();
 
   if (text.length <= maxLength) return text;
 
