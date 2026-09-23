@@ -1,48 +1,50 @@
 // Shaping of Spoonacular search results: ordering, readable ingredient
-// names, and a short dish summary. Kept free of Next.js imports so it can be
-// unit tested with `node --test`.
-
-const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'", nbsp: " " };
+// names, and a one line introduction to each dish. Kept free of Next.js
+// imports so it can be unit tested with `node --test`.
 
 /**
- * Drops any markup Spoonacular sends back. Tags are removed until the string
- * stops changing, so a nested or malformed tag cannot survive a single pass.
+ * Spoonacular's `summary` field is marketing copy rather than a description.
+ * Across the live results we sampled it always opened with diet labels and
+ * macros ("is a gluten free and dairy free main course. One portion contains
+ * roughly 44g of protein"), which says nothing about the dish. The structured
+ * fields in the same response do, so the card introduces a dish with those.
+ *
+ * Returns an empty string when there is nothing worth saying, and the card
+ * falls back to showing just the title.
  */
-function stripTags(html) {
-  let text = String(html).replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, " ");
-  let previous;
+export function dishIntro(recipe) {
+  if (!recipe) return "";
 
-  do {
-    previous = text;
-    text = text.replace(/<[^<>]*>/g, "");
-  } while (text !== previous);
+  const kind = [firstLabel(recipe.cuisines), firstLabel(recipe.dishTypes)]
+    .filter(Boolean)
+    .join(" ");
 
-  return text;
+  // Time and servings on their own read like a spec sheet, not an
+  // introduction, so they only ever follow the kind of dish.
+  if (!kind) return "";
+
+  const parts = [kind];
+
+  const minutes = Number(recipe.readyInMinutes);
+  if (Number.isFinite(minutes) && minutes > 0) parts.push(`ready in ${minutes} minutes`);
+
+  const servings = Number(recipe.servings);
+  if (Number.isFinite(servings) && servings > 0) {
+    parts.push(servings === 1 ? "serves 1" : `serves ${servings}`);
+  }
+
+  return `${parts.join(", ").replace(/^./, (character) => character.toUpperCase())}.`;
 }
 
-function decodeEntities(text) {
-  return text.replace(/&([a-z#0-9]+);/gi, (match, name) => ENTITIES[name.toLowerCase()] ?? match);
-}
+/** The first entry is the most specific label Spoonacular has. */
+function firstLabel(values) {
+  if (!Array.isArray(values)) return "";
 
-/**
- * Turns Spoonacular's HTML summary into one or two plain sentences. Returns
- * an empty string when there is nothing usable, so the card falls back to
- * showing just the title.
- */
-export function plainSummary(html, maxLength = 180) {
-  if (!html) return "";
+  const label = String(values[0] ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
 
-  const text = decodeEntities(stripTags(html)).replace(/\s+/g, " ").trim();
-
-  if (text.length <= maxLength) return text;
-
-  // Prefer cutting at the end of a sentence, then at a word boundary.
-  const clipped = text.slice(0, maxLength);
-  const lastStop = clipped.lastIndexOf(". ");
-  if (lastStop > maxLength * 0.4) return clipped.slice(0, lastStop + 1);
-
-  const lastSpace = clipped.lastIndexOf(" ");
-  return `${clipped.slice(0, lastSpace > 0 ? lastSpace : maxLength).trim()}...`;
+  return label.length > 24 ? "" : label;
 }
 
 /**

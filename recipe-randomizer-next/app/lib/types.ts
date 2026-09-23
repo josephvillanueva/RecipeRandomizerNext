@@ -12,8 +12,8 @@ export interface IngredientMatch {
   missedIngredientCount: number;
   usedIngredients: Ingredient[];
   missedIngredients: Ingredient[];
-  /** Short plain-text description, when Spoonacular has one. */
-  summary?: string;
+  /** One line introducing the dish, when Spoonacular has enough to say. */
+  intro?: string;
   likes?: number;
 }
 
