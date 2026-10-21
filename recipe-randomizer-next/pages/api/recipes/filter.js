@@ -4,7 +4,7 @@ import {
   createTtlCache,
   normalizeIngredients,
 } from "../../../app/lib/search-cache.mjs";
-import { plainSummary, rankRecipes } from "../../../app/lib/recipes.mjs";
+import { dishIntro, rankRecipes } from "../../../app/lib/recipes.mjs";
 
 const MAX_LENGTH = 500;
 
@@ -13,10 +13,10 @@ const MAX_LENGTH = 500;
 const cache = createTtlCache();
 
 /**
- * One extra call fetches a short description for every result at once.
- * Descriptions are a nice-to-have, so a failure here still returns recipes.
+ * One extra call describes every result at once. The introduction is a
+ * nice-to-have, so a failure here still returns recipes.
  */
-async function withSummaries(recipes) {
+async function withIntros(recipes) {
   if (recipes.length === 0) return recipes;
 
   const { status, body } = await spoonacular("/recipes/informationBulk", {
@@ -25,28 +25,29 @@ async function withSummaries(recipes) {
   });
 
   if (status !== 200 || !Array.isArray(body)) {
-    console.info(JSON.stringify({ event: "recipe_summaries", result: "skipped", status }));
+    console.info(JSON.stringify({ event: "recipe_intros", result: "skipped", status }));
     return recipes;
   }
 
-  const summaries = new Map(body.map((recipe) => [recipe.id, plainSummary(recipe.summary)]));
-  return recipes.map((recipe) => ({ ...recipe, summary: summaries.get(recipe.id) || "" }));
+  const intros = new Map(body.map((recipe) => [recipe.id, dishIntro(recipe)]));
+  return recipes.map((recipe) => ({ ...recipe, intro: intros.get(recipe.id) || "" }));
 }
 
 async function searchSpoonacular(ingredients) {
   const { status, body } = await spoonacular("/recipes/findByIngredients", {
     ingredients,
     number: 12,
-    // Rank by how many of your ingredients each recipe uses, and do not count
-    // pantry staples such as salt and water as missing.
-    ranking: 1,
+    // Minimize the ingredients you are missing, so dishes you can cook right
+    // now can surface at all. Pantry staples such as salt and water do not
+    // count as missing.
+    ranking: 2,
     ignorePantry: true,
   });
 
   if (status !== 200 || !Array.isArray(body)) return { status, body };
 
   // Dishes needing nothing extra first, then the closest matches.
-  return { status, body: rankRecipes(await withSummaries(body)) };
+  return { status, body: rankRecipes(await withIntros(body)) };
 }
 
 export default async function handler(req, res) {

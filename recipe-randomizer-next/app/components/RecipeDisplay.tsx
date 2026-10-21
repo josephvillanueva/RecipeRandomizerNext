@@ -67,9 +67,9 @@ function RecipeCard({ recipe, index }: { recipe: IngredientMatch; index: number 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <h3 className="font-semibold leading-snug">{recipe.title}</h3>
 
-        {recipe.summary && (
+        {recipe.intro && (
           <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-            {recipe.summary}
+            {recipe.intro}
           </p>
         )}
 

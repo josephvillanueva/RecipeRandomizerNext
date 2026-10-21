@@ -1,47 +1,42 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ingredientLabel, ingredientLabels, plainSummary, rankRecipes } from "../app/lib/recipes.mjs";
+import { dishIntro, ingredientLabel, ingredientLabels, rankRecipes } from "../app/lib/recipes.mjs";
 
-test("summary strips HTML and entities", () => {
-  const html = '<b>Chicken Arrozcaldo</b> is a Filipino rice porridge &amp; comfort food.';
+test("intro names the cuisine and dish type, then time and servings", () => {
+  const intro = dishIntro({
+    cuisines: ["Korean"],
+    dishTypes: ["main course"],
+    readyInMinutes: 45,
+    servings: 4,
+  });
 
-  assert.equal(plainSummary(html), "Chicken Arrozcaldo is a Filipino rice porridge & comfort food.");
+  assert.equal(intro, "Korean main course, ready in 45 minutes, serves 4.");
 });
 
-test("summary ends at a sentence when one is far enough in", () => {
-  const sentence = `${"A tasty dish that takes minutes to cook. ".repeat(3)}${"word ".repeat(40)}`;
-
-  const summary = plainSummary(sentence);
-  assert.ok(summary.endsWith("."), summary);
-  assert.ok(!summary.endsWith("..."), summary);
-  assert.ok(summary.length <= 180);
+test("intro works with only a dish type", () => {
+  assert.equal(dishIntro({ dishTypes: ["side dish"], servings: 1 }), "Side dish, serves 1.");
 });
 
-test("summary falls back to a word boundary with an ellipsis", () => {
-  const summary = plainSummary("word ".repeat(60));
-
-  assert.ok(summary.endsWith("..."));
-  assert.ok(summary.length <= 183);
-  assert.ok(!summary.includes("wor..."));
+test("intro is empty when the dish has no kind, however much else is known", () => {
+  assert.equal(dishIntro({ cuisines: [], dishTypes: [], readyInMinutes: 30, servings: 4 }), "");
+  assert.equal(dishIntro({}), "");
+  assert.equal(dishIntro(undefined), "");
 });
 
-test("summary leaves no markup behind, even when tags are nested", () => {
-  const html = "<b>Adobo</b> <scr<script>x</script>ipt>alert(1)</script> is a stew.";
+test("intro ignores nonsense times and servings", () => {
+  const intro = dishIntro({
+    dishTypes: ["soup"],
+    readyInMinutes: 0,
+    servings: null,
+  });
 
-  const summary = plainSummary(html);
-  assert.ok(!summary.includes("<"), summary);
-  assert.equal(summary, "Adobo alert(1) is a stew.");
+  assert.equal(intro, "Soup.");
 });
 
-test("summary drops the contents of script and style blocks", () => {
-  const html = "<style>p { color: red }</style>Sinigang is a sour soup.";
+test("intro skips a label too long to read as a dish type", () => {
+  const intro = dishIntro({ dishTypes: ["antipasti, starter, snack, appetizer"], servings: 2 });
 
-  assert.equal(plainSummary(html), "Sinigang is a sour soup.");
-});
-
-test("summary is empty when there is nothing usable", () => {
-  assert.equal(plainSummary(""), "");
-  assert.equal(plainSummary(undefined), "");
+  assert.equal(intro, "");
 });
 
 test("ingredient labels keep the first clause and stay short", () => {
