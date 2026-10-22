@@ -1,5 +1,6 @@
-name: CI
+name: Lint
 
+# Lint only. Install, tests and build run on CircleCI.
 on:
   push:
     branches: [main]
@@ -9,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  check:
+  lint:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,7 +25,3 @@ jobs:
       - run: npm ci
       - name: Lint
         run: npm run lint
-      - name: Test
-        run: npm test
-      - name: Build
-        run: npm run build
