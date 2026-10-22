@@ -1,0 +1,27 @@
+name: Lint
+
+# Lint only. Install, tests and build run on CircleCI.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: recipe-randomizer-next
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: recipe-randomizer-next/package-lock.json
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
